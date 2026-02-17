@@ -1,17 +1,13 @@
 from datetime import datetime, timedelta, timezone
+from app.models.token import Token
+from app.models.user import User
+from sqlmodel import Field, Session
 from pydantic import BaseModel
 import jwt
 
 SECRET_KEY = ""
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
-
-class Token(BaseModel):
-    access_token: str
-    token_type: str
-
-class TokenData(BaseModel):
-    username: str | None = None
 
 def create_access_token(data: dict):
     expires_delta = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -23,3 +19,9 @@ def create_access_token(data: dict):
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
+
+def verify_token(token: Token, session: Session):
+    payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    username = payload.get("sub")
+    return User.find_by_username(db=session, username=username)
+    

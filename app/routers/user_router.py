@@ -1,27 +1,58 @@
+from app.exceptions import BadRequestException, NotFoundException, AuthTokenExpiredException, AuthFailedException
 from fastapi import APIRouter, HTTPException, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
-from app.auth.auth_service import authenticate_user
-from app.auth.jwt_tokens import Token, create_access_token
+from app.auth.auth_service import get_password_hash
+from app.auth.jwt_tokens_service import verify_token, create_access_token
+from jwt.exceptions import InvalidTokenError,ExpiredSignatureError
+from app.models.token import Token, TokenData
+from app.models.user import UserRegister, User, UserInDB, UserPublic
+from app.database.config import get_session
 from typing import Annotated
+from sqlmodel import  Session
 from fastapi.responses import JSONResponse
 
+
+SessionDep = Annotated[Session, Depends(get_session)]
 router = APIRouter()
 
-
-
 @router.post("/login")
-async def login_for_access_token(
-    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-) -> Token:
-    user = authenticate_user(fake_users_db, form_data.username, form_data.password)
+def login_for_access_token(session: SessionDep, form_data: Annotated[OAuth2PasswordRequestForm, Depends()],) -> Token:
+    user = User.authenticate_user(db=session, username=form_data.username, password=form_data.password)
     if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        raise BadRequestException(detail="Incorrect username or password")
     access_token = create_access_token(
         data={"sub": user.username})
     return Token(access_token=access_token, token_type="bearer")
 
-@router.post("/register")
+@router.post("/register", response_model=UserPublic)
+def register(data: UserRegister, session: SessionDep):
+    user = User.find_by_email(db=session, email=data.email)
+    if user:
+        raise BadRequestException(detail="Email has already registered")
+    # hashing password
+    user_data = data.dict(exclude={"confirm_password"})
+    user_data["hashed_password"] = get_password_hash(user_data["password"])
+
+    # save user to db
+    user = User(**user_data)
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+
+    return user
+
+
+@router.get("/verify", response_model = UserPublic)
+def verify(token: str, session: SessionDep):
+    try:
+        user = verify_token(token=token, session=session)
+        if user is None:
+            raise NotFoundException(details="User not found")
+    except ExpiredSignatureError:
+        raise AuthTokenExpiredException()
+    except InvalidTokenError:
+        raise AuthFailedException()
+    
+    return user
+
+

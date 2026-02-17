@@ -1,13 +1,5 @@
-# to get a string like this run:
-# openssl rand -hex 32
-
-from typing import Annotated
-from app.models.token import TokenData
-from jwt.exceptions import InvalidTokenError
-from fastapi import Depends, HTTPException, status
 from pwdlib import PasswordHash
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-
+from fastapi.security import OAuth2PasswordBearer
 
 password_hash = PasswordHash.recommended()
 

@@ -1,8 +1,7 @@
 from datetime import datetime, timedelta, timezone
 from app.models.token import Token
 from app.models.user import User
-from sqlmodel import Field, Session
-from pydantic import BaseModel
+from sqlmodel import Session
 import jwt
 
 SECRET_KEY = ""

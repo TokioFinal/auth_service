@@ -1,16 +1,14 @@
 from app.exceptions import BadRequestException, NotFoundException, AuthTokenExpiredException, AuthFailedException
-from fastapi import APIRouter, HTTPException, Depends, status
+from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from app.auth.auth_service import get_password_hash
 from app.auth.jwt_tokens_service import verify_token, create_access_token
 from jwt.exceptions import InvalidTokenError,ExpiredSignatureError
-from app.models.token import Token, TokenData
-from app.models.user import UserRegister, User, UserInDB, UserPublic
+from app.models.token import Token
+from app.models.user import UserRegister, User, UserPublic
 from app.database.config import get_session
 from typing import Annotated
 from sqlmodel import  Session
-from fastapi.responses import JSONResponse
-
 
 SessionDep = Annotated[Session, Depends(get_session)]
 router = APIRouter()
@@ -32,15 +30,12 @@ def register(data: UserRegister, session: SessionDep):
     # hashing password
     user_data = data.dict(exclude={"confirm_password"})
     user_data["hashed_password"] = get_password_hash(user_data["password"])
-
     # save user to db
     user = User(**user_data)
     session.add(user)
     session.commit()
     session.refresh(user)
-
     return user
-
 
 @router.get("/verify", response_model = UserPublic)
 def verify(token: str, session: SessionDep):
@@ -51,8 +46,7 @@ def verify(token: str, session: SessionDep):
     except ExpiredSignatureError:
         raise AuthTokenExpiredException()
     except InvalidTokenError:
-        raise AuthFailedException()
-    
+        raise AuthFailedException() 
     return user
 
 

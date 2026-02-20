@@ -17,16 +17,16 @@ router = APIRouter()
 def login_for_access_token(session: SessionDep, form_data: Annotated[OAuth2PasswordRequestForm, Depends()],) -> Token:
     user = User.authenticate_user(db=session, username=form_data.username, password=form_data.password)
     if not user:
-        raise BadRequestException(detail="Incorrect username or password")
+        raise AuthFailedException(detail="Incorrect username or password")
     access_token = create_access_token(
         data={"sub": user.username})
     return Token(access_token=access_token, token_type="bearer")
 
 @router.post("/register", response_model=UserPublic)
 def register(data: UserRegister, session: SessionDep):
-    user = User.find_by_email(db=session, email=data.email)
+    user = User.find_by_username(db=session, username=data.username)
     if user:
-        raise BadRequestException(detail="Email has already registered")
+        raise BadRequestException(detail="User has already registered")
     # hashing password
     user_data = data.dict(exclude={"confirm_password"})
     user_data["hashed_password"] = get_password_hash(user_data["password"])
@@ -42,7 +42,7 @@ def verify(token: str, session: SessionDep):
     try:
         user = verify_token(token=token, session=session)
         if user is None:
-            raise NotFoundException(details="User not found")
+            raise NotFoundException(detail="User not found")
     except ExpiredSignatureError:
         raise AuthTokenExpiredException()
     except InvalidTokenError:

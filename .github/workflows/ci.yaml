@@ -16,7 +16,7 @@ jobs:
     uses: TokioFinal/tokio_reusable_workflows/.github/workflows/determine_environment.yaml@v2
 
   test:
-    uses: .github/workflows/test.yaml
+    uses: ./.github/workflows/test.yaml
     secrets:
       jwt_key: ${{ secrets.JWT_KEY }}
   

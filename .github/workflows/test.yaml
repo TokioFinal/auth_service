@@ -17,9 +17,11 @@ jobs:
         uses: actions/setup-python@v6
 
       - name: setup virtual environment and run tests
+        env:
+          SECRET_KEY: ${{ secrets.jwt_key }}
         shell: bash
         run: |
           python -m venv .venv
           source .venv/bin/activate
           pip install -r requirements.txt
-          SECRET_KEY = ${{ secrets.jwt_key }} pytest
+          pytest

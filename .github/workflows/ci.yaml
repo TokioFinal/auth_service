@@ -16,7 +16,9 @@ jobs:
     uses: TokioFinal/tokio_reusable_workflows/.github/workflows/determine_environment.yaml@v2
 
   test:
-    uses: TokioFinal/tokio_reusable_workflows/.github/workflows/test_python_app.yaml@v2
+    uses: .github/workflows/test.yaml
+    secrets:
+      jwt_key: ${{ secrets.JWT_KEY }}
   
   build-push:
     runs-on: ubuntu-latest

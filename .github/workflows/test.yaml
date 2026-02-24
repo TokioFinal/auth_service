@@ -2,6 +2,9 @@ name: test
 
 on:
   workflow_call:
+    secrets:
+      jwt_key:
+        required: true
   
 jobs:
   test:
@@ -19,4 +22,4 @@ jobs:
           python -m venv .venv
           source .venv/bin/activate
           pip install -r requirements.txt
-          SECRET_KEY = ${{secrets.JWT_KEY}} pytest
+          SECRET_KEY = ${{ secrets.jwt_key }} pytest

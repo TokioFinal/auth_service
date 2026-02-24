@@ -1,7 +1,5 @@
 from typing import Any
 from fastapi import HTTPException, status
-from typing import Any
-from fastapi import HTTPException, status
 
 class BadRequestException(HTTPException):
     def __init__(self, detail: Any = None) -> None:

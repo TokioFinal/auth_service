@@ -47,7 +47,7 @@ class UserRegister(Userbase):
         return v   
     
 class UserPublic(Userbase):
-    super
+    pass
     
 
 

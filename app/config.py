@@ -3,7 +3,7 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     DEBUG: bool = False #default
-    ENABLE_MONOTORING: bool = True #default
+    ENABLE_MONOTORING: bool = False #default
     OTEL_EXPORTER_OTLP_ENDPOINT: str
     OTEL_SERVICE_NAME: str
     SECRET_KEY : str

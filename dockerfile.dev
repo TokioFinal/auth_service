@@ -1,7 +1,7 @@
 FROM python:latest
-COPY requirements.txt requirements.txt
+COPY requirements-dev.txt requirements-dev.txt
 RUN python3 -m venv .venv
 RUN . .venv/bin/activate
-RUN pip install -r requirements.txt
+RUN pip install -r requirements-dev.txt
 COPY . .
 CMD ["fastapi", "dev", "app/main.py" ]

@@ -19,6 +19,9 @@ jobs:
     uses: ./.github/workflows/test.yaml
     secrets:
       jwt_key: ${{ secrets.JWT_KEY }}
+
+  trivy_scan:
+    uses: TokioFinal/tokio_reusable_workflows/.github/workflows/trivy_scan.yaml@v3
   
   build-push:
     runs-on: ubuntu-latest

@@ -37,7 +37,7 @@ jobs:
       - name: update gitops repository
         shell: bash
         run: |
-          cd ${{github.event.inputs.environment}}
+          cd ${{github.event.inputs.environment}}/manifests
            
           sed -i "s|image: ${{vars.DOCKER_USERNAME}}/${{vars.DOCKERHUB_REPOSITORY}}:.*|image: ${{vars.DOCKER_USERNAME}}/${{vars.DOCKERHUB_REPOSITORY}}:${{github.event.inputs.image}}|g" auth-service-deployment.yaml
 

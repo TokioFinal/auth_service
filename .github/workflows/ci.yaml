@@ -21,7 +21,13 @@ jobs:
       jwt_key: ${{ secrets.JWT_KEY }}
 
   trivy_scan:
-    uses: TokioFinal/tokio_reusable_workflows/.github/workflows/trivy_scan.yaml@v3
+    runs-on: ubuntu-latest
+    environment: ${{needs.determine-environment.outputs.selected-environment}}
+    steps:
+      - name: Trivi Scan
+        uses: TokioFinal/tokio_reusable_workflows/.github/workflows/trivy_scan.yaml@v3
+        with: 
+          requirements: ${{vars.REQUIREMENTS_FILE}}
   
   build-push:
     runs-on: ubuntu-latest

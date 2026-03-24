@@ -14,11 +14,11 @@ def create_access_token(data: dict):
     else:
         expire = datetime.now(timezone.utc) + timedelta(minutes=15)
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, "ba3cf318a0b11cf763c4fc0a853946ec40d43647dd2a52257fc2349c5bc57d70", algorithm=settings.ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
     return encoded_jwt
 
 def verify_token(token: Token, session: Session):
-    payload = jwt.decode(token, "ba3cf318a0b11cf763c4fc0a853946ec40d43647dd2a52257fc2349c5bc57d70", algorithms=[settings.ALGORITHM])
+    payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
     username = payload.get("sub")
     return User.find_by_username(db=session, username=username)
     

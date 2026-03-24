@@ -25,7 +25,7 @@ jobs:
     environment: ${{needs.determine-environment.outputs.selected-environment}}
     steps:
       - name: Trivi Scan
-        uses: TokioFinal/tokio_reusable_workflows/.github/workflows/trivy_scan.yaml@v3
+        uses: TokioFinal/tokio_reusable_workflows/.github/actions/trivy_scan.yaml@v3
         with: 
           requirements: ${{vars.REQUIREMENTS_FILE}}
   

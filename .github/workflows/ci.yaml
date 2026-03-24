@@ -27,7 +27,7 @@ jobs:
       - name: Trivi Scan
         uses: TokioFinal/tokio_reusable_workflows/.github/actions/trivy_scan@v3
         with: 
-          requirements: ${{ vars.REQUIREMENTS_FILE }}
+          requirements: 'test input'
   
   build-push:
     runs-on: ubuntu-latest

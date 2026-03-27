@@ -2,8 +2,6 @@ fastapi[standard]
 sqlmodel
 pyjwt
 pwdlib[argon2]
-pydantic
-pydantic-settings
 requests
 opentelemetry-sdk
 opentelemetry-api
